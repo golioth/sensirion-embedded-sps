@@ -36,7 +36,7 @@
 extern "C" {
 #endif
 
-#include "sensirion_arch_config.h"
+#include "sensirion_config.h"
 #include "sensirion_common.h"
 #include "sensirion_i2c.h"
 
@@ -212,7 +212,7 @@ int16_t sps30_set_fan_auto_cleaning_interval_days(uint8_t interval_days);
 int16_t sps30_start_manual_fan_cleaning(void);
 
 /**
- * sps30_reset() - reset the SGP30
+ * sps30_reset() - reset the SPS30
  *
  * The sensor reboots to the same state as before the reset but takes a few
  * seconds to resume measurements.

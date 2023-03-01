@@ -30,9 +30,10 @@
  */
 
 #include "sps30.h"
-#include "sensirion_arch_config.h"
+#include "sensirion_config.h"
 #include "sensirion_common.h"
 #include "sensirion_i2c.h"
+#include "sensirion_i2c_hal.h"
 #include "sps_git_version.h"
 
 #define SPS_CMD_START_MEASUREMENT 0x0010
@@ -105,7 +106,7 @@ int16_t sps30_start_measurement(void) {
         SPS30_I2C_ADDRESS, SPS_CMD_START_MEASUREMENT, &arg,
         SENSIRION_NUM_WORDS(arg));
 
-    sensirion_sleep_usec(SPS_CMD_START_STOP_DELAY_USEC);
+    sensirion_i2c_hal_sleep_usec(SPS_CMD_START_STOP_DELAY_USEC);
 
     return ret;
 }
@@ -113,7 +114,7 @@ int16_t sps30_start_measurement(void) {
 int16_t sps30_stop_measurement(void) {
     int16_t ret =
         sensirion_i2c_write_cmd(SPS30_I2C_ADDRESS, SPS_CMD_STOP_MEASUREMENT);
-    sensirion_sleep_usec(SPS_CMD_START_STOP_DELAY_USEC);
+    sensirion_i2c_hal_sleep_usec(SPS_CMD_START_STOP_DELAY_USEC);
     return ret;
 }
 
@@ -139,16 +140,16 @@ int16_t sps30_read_measurement(struct sps30_measurement* measurement) {
         return error;
     }
 
-    measurement->mc_1p0 = sensirion_bytes_to_float(data[0]);
-    measurement->mc_2p5 = sensirion_bytes_to_float(data[1]);
-    measurement->mc_4p0 = sensirion_bytes_to_float(data[2]);
-    measurement->mc_10p0 = sensirion_bytes_to_float(data[3]);
-    measurement->nc_0p5 = sensirion_bytes_to_float(data[4]);
-    measurement->nc_1p0 = sensirion_bytes_to_float(data[5]);
-    measurement->nc_2p5 = sensirion_bytes_to_float(data[6]);
-    measurement->nc_4p0 = sensirion_bytes_to_float(data[7]);
-    measurement->nc_10p0 = sensirion_bytes_to_float(data[8]);
-    measurement->typical_particle_size = sensirion_bytes_to_float(data[9]);
+    measurement->mc_1p0 = sensirion_common_bytes_to_float(data[0]);
+    measurement->mc_2p5 = sensirion_common_bytes_to_float(data[1]);
+    measurement->mc_4p0 = sensirion_common_bytes_to_float(data[2]);
+    measurement->mc_10p0 = sensirion_common_bytes_to_float(data[3]);
+    measurement->nc_0p5 = sensirion_common_bytes_to_float(data[4]);
+    measurement->nc_1p0 = sensirion_common_bytes_to_float(data[5]);
+    measurement->nc_2p5 = sensirion_common_bytes_to_float(data[6]);
+    measurement->nc_4p0 = sensirion_common_bytes_to_float(data[7]);
+    measurement->nc_10p0 = sensirion_common_bytes_to_float(data[8]);
+    measurement->typical_particle_size = sensirion_common_bytes_to_float(data[9]);
 
     return 0;
 }
@@ -163,7 +164,7 @@ int16_t sps30_get_fan_auto_cleaning_interval(uint32_t* interval_seconds) {
         return error;
     }
 
-    sensirion_sleep_usec(SPS_CMD_DELAY_USEC);
+    sensirion_i2c_hal_sleep_usec(SPS_CMD_DELAY_USEC);
 
     error = sensirion_i2c_read_words_as_bytes(SPS30_I2C_ADDRESS, data,
                                               SENSIRION_NUM_WORDS(data));
@@ -171,7 +172,7 @@ int16_t sps30_get_fan_auto_cleaning_interval(uint32_t* interval_seconds) {
         return error;
     }
 
-    *interval_seconds = sensirion_bytes_to_uint32_t(data);
+    *interval_seconds = sensirion_common_bytes_to_uint32_t(data);
 
     return 0;
 }
@@ -184,7 +185,7 @@ int16_t sps30_set_fan_auto_cleaning_interval(uint32_t interval_seconds) {
     ret = sensirion_i2c_write_cmd_with_args(SPS30_I2C_ADDRESS,
                                             SPS_CMD_AUTOCLEAN_INTERVAL, data,
                                             SENSIRION_NUM_WORDS(data));
-    sensirion_sleep_usec(SPS_CMD_DELAY_WRITE_FLASH_USEC);
+    sensirion_i2c_hal_sleep_usec(SPS_CMD_DELAY_WRITE_FLASH_USEC);
     return ret;
 }
 
@@ -213,7 +214,7 @@ int16_t sps30_start_manual_fan_cleaning(void) {
     if (ret)
         return ret;
 
-    sensirion_sleep_usec(SPS_CMD_DELAY_USEC);
+    sensirion_i2c_hal_sleep_usec(SPS_CMD_DELAY_USEC);
     return 0;
 }
 
@@ -228,7 +229,7 @@ int16_t sps30_sleep(void) {
     if (ret)
         return ret;
 
-    sensirion_sleep_usec(SPS_CMD_DELAY_USEC);
+    sensirion_i2c_hal_sleep_usec(SPS_CMD_DELAY_USEC);
     return 0;
 }
 
@@ -241,7 +242,7 @@ int16_t sps30_wake_up(void) {
     if (ret)
         return ret;
 
-    sensirion_sleep_usec(SPS_CMD_DELAY_USEC);
+    sensirion_i2c_hal_sleep_usec(SPS_CMD_DELAY_USEC);
     return 0;
 }
 
